@@ -166,7 +166,7 @@ const book_delete_get = (req, res, next) => {
 const book_delete_post = (req, res, next) => {
     Book.findByIdAndRemove(req.body.bookid, (err) => {
         if(err) return next(err)
-        res.redirect('/catalog/books')
+        res.redirect('/catalog/books')  
     }
 )}
 
