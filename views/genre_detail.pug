@@ -1,4 +1,4 @@
-extends layout
+extends layout 
 
 block content
 
@@ -16,3 +16,7 @@ block content
 
       else
         p This genre has no books
+  
+    p
+    a(href=genre.url+'/delete') Delete genre
+    //- this takes to the delete page, doesnt send delete request

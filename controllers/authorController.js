@@ -111,7 +111,7 @@ const author_delete_post = (req, res, next) => {
         }
     }, function(err, results){
         if(err) return next(err)
-        if(results.author_books.length > 0){
+        if(results.author_books.length > 0){ //it ez felesleges valójában, mert csak simán nem rendereli a delete gombot ha nem üres
             res.render('author_delete', {title: 'Delete Author', author: results.author, author_books: results.author_books})
         } else{
             Author.findByIdAndRemove(req.body.authorid, (err) => {

@@ -50,7 +50,7 @@ const book_detail = (req, res, next) => {
                 .exec(callback)
         },
         book_instance: function(callback){
-            BookInstance.find({'book': req.params.id})
+            BookInstance.find({'book': req.params.id}) //book-ot nem muszáj stringként
                 .exec(callback)
         }
     }, function(err, results){
@@ -142,14 +142,33 @@ const book_create_post = [
 ];
 
 // Display book delete form on GET.
-const book_delete_get = (req, res) => {
-    res.send('NOT IMPLEMENTED: Book delete GET');
+const book_delete_get = (req, res, next) => {
+    //check for existing bookinstances
+    //pass down book and list of instances as prop
+    async.parallel({
+        book: function(callback){
+            Book.findById(req.params.id)
+                .populate('author')
+                .exec(callback)
+        },
+        instances_of_book: function(callback){
+            BookInstance.find({"book": req.params.id})
+                .populate('book')
+                .exec(callback)
+        }
+    }, (err, results) => {
+        if(err) return next(err)
+        res.render('book_delete', {title: 'Delete Book', book: results.book, instances_of_book: results.instances_of_book})
+    })
 };
 
 // Handle book delete on POST.
-const book_delete_post = (req, res) => {
-    res.send('not implemented')
-}
+const book_delete_post = (req, res, next) => {
+    Book.findByIdAndRemove(req.body.bookid, (err) => {
+        if(err) return next(err)
+        res.redirect('/catalog/books')
+    }
+)}
 
 // Display book update form on GET. (update book ui)
 const book_update_get = (req, res) => {
@@ -232,7 +251,7 @@ const book_update_post = [
                         results.genres[i].checked = 'true'
                     }
                 }
-                res.render('book_form', {title: 'Update Book', authors: results.authors, genres: result.genres, book: book, errors: errors.array()})
+                res.render('book_form', {title: 'Update Book', authors: results.authors, genres: results.genres, book: book, errors: errors.array()})
             })
         } else{
             Book.findByIdAndUpdate(req.params.id, book, {}, function(err, thebook){

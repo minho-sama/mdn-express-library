@@ -1,9 +1,10 @@
-const Genre = require('../models/genre');
+const Genre = require('../models/genre'); 
 
 var Book = require('../models/book');
 var async = require('async');
 
-const {body, validationResult} = require('express-validator')
+const {body, validationResult} = require('express-validator');
+const genre = require('../models/genre');
 
 // Display list of all Genre.
 const genre_list = (req, res, next) => {
@@ -83,14 +84,26 @@ const genre_create_post = [ // an ARRAY of middleware functions
 ];
 
 // Display Genre delete form on GET.
-const genre_delete_get = (req, res) => {
-    res.send('NOT IMPLEMENTED: Genre delete GET');
+const genre_delete_get = (req, res, next) => {
+    async.parallel({
+        genre: function(callback){
+            Genre.findById(req.params.id).exec(callback)
+        },
+        genre_books: function(callback){
+            Book.find({genre: req.params.id}).exec(callback) //lol even it's an array, I dont have to loop through it (i guess mongoose handles it for me)
+        }
+    }, function(err, results){
+        if(err) return next(err)
+        res.render('genre_delete', {title: 'Delete Genre', genre: results.genre, genre_books: results.genre_books } )
+    })
 };
-
+ 
 // Handle Genre delete on POST.
 const genre_delete_post = (req, res) => {
-    res.send('NOT IMPLEMENTED: Genre delete POST');
-};
+    Genre.findByIdAndRemove(req.body.genreid, (err) => {
+        res.redirect('/catalog/genres')
+    }
+)};
 
 // Display Genre update form on GET.
 const genre_update_get = (req, res) => {
