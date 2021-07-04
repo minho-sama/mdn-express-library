@@ -1,3 +1,4 @@
+require('dotenv').config()
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -11,8 +12,8 @@ const catalogRouter = require('./routes/catalog')
 const app = express();
 //connect to mongodb
 const mongoose = require('mongoose')
-var dev_db_url = "mongodb+srv://minh:735196Lili@mdn-library.w27nj.mongodb.net/local-library?retryWrites=true&w=majority"
-var mongoDB = process.env.MONGODB_URI || dev_db_url;
+const dev_db_url = process.env.DB_URL
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true})
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error'))

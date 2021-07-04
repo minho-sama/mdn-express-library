@@ -80,7 +80,7 @@ const author_create_post = [
 
 // Display Author delete form on GET.
 const author_delete_get = (req, res, next) => {
-    async.parallel({
+    async.parallel({ //Promise.all()
         author: function(callback) {
             Author.findById(req.params.id).exec(callback)
         },
